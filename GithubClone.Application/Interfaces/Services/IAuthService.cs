@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GithubClone.Application.Services
+namespace GithubClone.Application.Interfaces.Services
 {
   public interface IAuthService
     {

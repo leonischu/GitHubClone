@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GithubClone.Application.Repository
+namespace GithubClone.Application.Interfaces.Repository
 {
-    internal interface IUserRepository
+    public interface IUserRepository
     {
         Task<int> CreateAsync(User user);
         Task<User?> GetByEmailAsync(string email);  
