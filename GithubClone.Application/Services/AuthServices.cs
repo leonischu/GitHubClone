@@ -63,15 +63,18 @@ namespace GithubClone.Application.Services
 
             var claims = new[]
             {
+
+                //Claims are infromation that goes into the token
+
                 new Claim("id",user.Id.ToString()),
                 new Claim("username",user.Username),
                 new Claim("email",user.Email)
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));   //Fetches secret key from the appsetting,converts string into bytes and create a security key object for signing with jwt
             var token = new JwtSecurityToken(
-                     issuer: _config["Jwt:Issuer"],
-                claims: claims,
+                 issuer: _config["Jwt:Issuer"],
+                claims: claims, //includes array of claims
                 expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials:
                     new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
