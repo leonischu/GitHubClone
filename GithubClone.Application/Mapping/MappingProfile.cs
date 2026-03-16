@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace GithubClone.Application.Mapping
 {
-    internal class MappingProfile:Profile
+    public class MappingProfile:Profile
     {
         public MappingProfile()
         {

@@ -56,7 +56,7 @@ namespace GithubClone.Application.Services
         public async Task<string> LoginAsync(LoginDto dto)
         {
             var user = await _repo.GetByEmailAsync(dto.Email);
-            if(user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.))
+            if(user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
             {
                 throw new Exception("Invalid credintials");
             }

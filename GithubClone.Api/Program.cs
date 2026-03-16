@@ -1,7 +1,13 @@
 using GithubClone.Application.Interfaces.Repository;
+using GithubClone.Application.Interfaces.Services;
+using GithubClone.Application.Mapping;
 using GithubClone.Application.Repository;
+using GithubClone.Application.Services;
 using GithubClone.Infrastructure.Database;
-using GithubClone.Infrastructure.Repository;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
+//using GithubClone.Infrastructure.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +19,24 @@ builder.Services.AddSingleton<DapperContext>();
 // ---------------- Repositories ----------------
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+
+builder.Services.AddScoped<IAuthService, AuthServices>();
+
+try
+{
+    builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+}
+catch (ReflectionTypeLoadException ex)
+{
+    foreach (var loaderException in ex.LoaderExceptions)
+    {
+        Console.WriteLine(loaderException?.Message);
+    }
+    throw;
+}
+
+
 
 // ---------------- Controllers ----------------
 
@@ -31,6 +55,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
 }
 
 app.UseHttpsRedirection();
