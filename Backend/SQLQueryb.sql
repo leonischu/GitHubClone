@@ -1,0 +1,10 @@
+CREATE TABLE Repositories (
+    Id INT IDENTITY PRIMARY KEY,
+    Name NVARCHAR(200) NOT NULL,
+    Description NVARCHAR(500),
+    OwnerId INT NOT NULL,
+    IsPrivate BIT NOT NULL DEFAULT 0,
+    CreatedAt DATETIME NOT NULL,
+
+    FOREIGN KEY (OwnerId) REFERENCES Users(Id)
+);

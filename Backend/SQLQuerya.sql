@@ -1,0 +1,8 @@
+CREATE TABLE Users
+(
+    Id INT IDENTITY PRIMARY KEY,
+    Username NVARCHAR(100),
+    Email NVARCHAR(150) UNIQUE,
+    PasswordHash NVARCHAR(MAX),
+    CreatedAt DATETIME
+);
