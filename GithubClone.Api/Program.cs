@@ -4,9 +4,12 @@ using GithubClone.Application.Mapping;
 using GithubClone.Application.Repository;
 using GithubClone.Application.Services;
 using GithubClone.Infrastructure.Database;
+using GithubClone.Infrastructure.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
+using System.Text;
 //using GithubClone.Infrastructure.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +25,22 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
 builder.Services.AddScoped<IAuthService, AuthServices>();
+
+
+//For RepositoriesRepositories 
+
+builder.Services.AddScoped<IRepositoryRepository, RepositoryRepository>();
+
+builder.Services.AddScoped<IRepositoryService, RepositoryServices>();
+
+
+
+
+
+
+
+
+
 
 try
 {
@@ -73,6 +92,42 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+
+
+
+
+
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
+            )
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var app = builder.Build();
 
 // ---------------- Middleware ----------------
@@ -86,6 +141,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
