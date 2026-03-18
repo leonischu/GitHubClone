@@ -1,0 +1,18 @@
+CREATE TABLE PullRequests (
+    Id INT PRIMARY KEY IDENTITY,
+    RepositoryId INT NOT NULL,
+    SourceBranchId INT NOT NULL,
+    TargetBranchId INT NOT NULL,
+    Title NVARCHAR(255) NOT NULL,
+    Description NVARCHAR(MAX),
+    Status NVARCHAR(50) NOT NULL,
+    CreatedAt DATETIME NOT NULL DEFAULT GETUTCDATE()
+);
+
+CREATE TABLE PullRequestComments (
+    Id INT PRIMARY KEY IDENTITY,
+    PullRequestId INT NOT NULL,
+    UserId INT NOT NULL,
+    Comment NVARCHAR(MAX) NOT NULL,
+    CreatedAt DATETIME NOT NULL DEFAULT GETUTCDATE()
+);

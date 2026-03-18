@@ -17,3 +17,4 @@ namespace GithubClone.Domain.Entities
         public DateTime CreatedAt { get; set; }
     }
 }
+            
