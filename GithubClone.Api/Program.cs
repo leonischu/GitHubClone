@@ -35,6 +35,12 @@ builder.Services.AddScoped<IRepositoryService, RepositoryServices>();
 
 
 
+//For Commits 
+builder.Services.AddScoped<ICommitRepository, CommitRepository>();
+builder.Services.AddScoped<IFileRepository, FileRepository>();
+builder.Services.AddScoped<IRepositoryFileRepository, RepositoryFileRepository>();
+builder.Services.AddScoped<ICommitService, CommitService>();
+
 
 
 

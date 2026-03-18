@@ -17,7 +17,10 @@ namespace GithubClone.Application.Mapping
             CreateMap<RegisterDto, User>().ReverseMap();
 
             CreateMap<CreateRepositoryDto, Repositories>().ReverseMap();
-            CreateMap<Repositories,RepositoryDto>().ReverseMap();   
+            CreateMap<Repositories,RepositoryDto>().ReverseMap();
+
+            CreateMap<Commit, CommitDto>().ReverseMap();
+
         }
     }
 }

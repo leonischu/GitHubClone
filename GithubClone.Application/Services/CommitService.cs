@@ -49,14 +49,19 @@ namespace GithubClone.Application.Services
                     FileName = fileDto.FileName,
                     Content = fileDto.Content
                 };
-                var fileId = await _fileRepo.CreateAsync(file);
+
+
+                var fileId = await _fileRepo.CreateAsync(file); //Saves the file in database and returns the fileId
+                
+                //Creates Connection
+                
                 var repoFile = new RepositoryFile
                 {
                     RepositoryId = dto.RepositoryId,
                     FileId = fileId,
                     CommitId = commitId
                 };
-                await _repoFileRepo.CreateAsync(repoFile);
+                await _repoFileRepo.CreateAsync(repoFile);  //Save
 
             }
         }
