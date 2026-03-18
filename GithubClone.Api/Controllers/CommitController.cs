@@ -42,7 +42,13 @@ namespace GithubClone.Api.Controllers
 
 
 
+        [HttpGet("branch/{branchId}")]
+        public async Task<IActionResult> GetByBranch(int branchId)
+        {
+            var commits = await _service.GetCommitsByBranch(branchId);
 
+            return Ok(commits);
+        }
 
     }
 }

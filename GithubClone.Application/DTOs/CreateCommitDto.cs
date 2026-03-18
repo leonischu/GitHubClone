@@ -9,6 +9,7 @@ namespace GithubClone.Application.DTOs
     public class CreateCommitDto
     {
         public int RepositoryId { get; set; }
+        public int BranchId { get; set; }
 
         public string Message { get; set; }
 

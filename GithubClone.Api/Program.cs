@@ -42,7 +42,9 @@ builder.Services.AddScoped<IRepositoryFileRepository, RepositoryFileRepository>(
 builder.Services.AddScoped<ICommitService, CommitService>();
 
 
-
+//For Branches
+builder.Services.AddScoped<IBranchRepository, BranchRepository>();
+builder.Services.AddScoped<IBranchService, BranchService>();
 
 
 

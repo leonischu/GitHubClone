@@ -15,10 +15,12 @@ namespace GithubClone.Application.Services
     {
         private readonly IRepositoryRepository _repository;
         private readonly IMapper _mapper;
+        private readonly IBranchRepository _branchRepo;
 
-        public RepositoryServices(IRepositoryRepository repository , IMapper mapper )
+        public RepositoryServices(IRepositoryRepository repository , IMapper mapper, IBranchRepository branchRepo)
         {
             _repository = repository;
+            _branchRepo = branchRepo;
             _mapper = mapper;
             
         }
@@ -33,7 +35,19 @@ namespace GithubClone.Application.Services
             repo.OwnerId = userId;
             repo.CreatedAt = DateTime.UtcNow;
             var id = await _repository.CreateAsync(repo);   
-            repo.Id = id;   
+            repo.Id = id;
+
+            //Create Default main branch
+            await _branchRepo.CreateAsync(new Branch
+            {
+                RepositoryId = repo.Id,
+                Name = "main",
+                CreatedBy = userId,
+                CreatedAt = DateTime.UtcNow
+            });
+
+
+
             return _mapper.Map<RepositoryDto>(repo); 
         }
 

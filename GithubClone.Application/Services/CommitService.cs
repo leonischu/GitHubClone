@@ -39,6 +39,7 @@ namespace GithubClone.Application.Services
                 Message = dto.Message,
                 CreatedBy = userId,
                 CreatedAt = DateTime.UtcNow,
+                BranchId = dto.BranchId
             };
 
             var commitId = await _commitRepo.CreateAsync(commit);
@@ -72,5 +73,13 @@ namespace GithubClone.Application.Services
 
             return _mapper.Map<IEnumerable<CommitDto>>(commits);
         }
+
+        public async Task<IEnumerable<CommitDto>> GetCommitsByBranch(int branchId)
+        {
+            var commits = await _commitRepo.GetByBranchIdAsync(branchId);
+
+            return _mapper.Map<IEnumerable<CommitDto>>(commits);
+        }
+
     }
 }

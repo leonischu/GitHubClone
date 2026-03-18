@@ -21,8 +21,8 @@ namespace GithubClone.Infrastructure.Repository
 
         public async Task<int> CreateAsync(Commit commit)
         {
-            var query = @"INSERT INTO Commits(RepositoryId,Message,CreatedBy,CreatedAt)
-                        VALUES(@RepositoryId,@Message,@CreatedBy,@CreatedAt)   
+            var query = @"INSERT INTO Commits(RepositoryId,Message,BranchId,CreatedBy,CreatedAt)
+                        VALUES(@RepositoryId,@Message,@BranchId,@CreatedBy,@CreatedAt)   
                         SELECT CAST(SCOPE_IDENTITY() as int)";
             using var connection = _context.CreateConnection();
             return await connection.ExecuteScalarAsync<int>(query, commit);
@@ -34,5 +34,15 @@ namespace GithubClone.Infrastructure.Repository
             using var connection = _context.CreateConnection();
             return await connection.QueryAsync<Commit>(query, new { repoId });
         }
+
+        public async Task<IEnumerable<Commit>> GetByBranchIdAsync(int branchId)
+        {
+            var query = "SELECT * FROM Commits WHERE BranchId = @branchId";
+
+            using var connection = _context.CreateConnection();
+
+            return await connection.QueryAsync<Commit>(query, new { branchId });
+        }
+
     }
 }

@@ -21,6 +21,8 @@ namespace GithubClone.Application.Mapping
 
             CreateMap<Commit, CommitDto>().ReverseMap();
 
+            CreateMap<Branch, BranchDto>().ReverseMap();
+
         }
     }
 }

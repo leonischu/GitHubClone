@@ -13,5 +13,6 @@ namespace GithubClone.Application.DTOs
         public string Message { get; set; }
 
         public DateTime CreatedAt { get; set; }
+        public int BranchId { get; set; }
     }
 }

@@ -12,6 +12,6 @@ namespace GithubClone.Application.Interfaces.Services
         Task CreateCommitAsync(int userId, CreateCommitDto dto);
 
         Task<IEnumerable<CommitDto>> GetCommits(int repoId);
-    
+        Task<IEnumerable<CommitDto>> GetCommitsByBranch(int branchId);
 }
 }
