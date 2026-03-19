@@ -46,7 +46,10 @@ builder.Services.AddScoped<ICommitService, CommitService>();
 builder.Services.AddScoped<IBranchRepository, BranchRepository>();
 builder.Services.AddScoped<IBranchService, BranchService>();
 
+//For Pull Request 
 
+builder.Services.AddScoped<IPullRequestRepository, PullRequestRepository>();
+builder.Services.AddScoped<IPullRequestService, PullRequestService>();
 
 
 
