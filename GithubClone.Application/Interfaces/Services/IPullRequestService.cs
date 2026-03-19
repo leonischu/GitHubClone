@@ -9,9 +9,9 @@ namespace GithubClone.Application.Interfaces.Services
 {
     public interface IPullRequestService
     {
-        Task<int> CreateaPR(CreatePullRequestDto dto);
+        Task<int> CreatePR(CreatePullRequestDto dto);
         Task<IEnumerable<PullRequestDto>> GetPrs(int repoId);
-        Task AddComment(CreateCommentDto dto);
+        Task AddComment(CreateCommentDto dto,int userId);
         Task ClosePR(int prId);
         Task MergePR(int prId);
     }

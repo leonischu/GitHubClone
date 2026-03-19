@@ -27,7 +27,7 @@ namespace GithubClone.Application.DTOs
     public class CreateCommentDto
     {
         public int PullRequestId { get; set; }
-        public int UserId { get; set; }
+        //public int UserId { get; set; }
         public string Comment { get; set; }
     }
 

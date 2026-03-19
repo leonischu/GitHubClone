@@ -23,6 +23,13 @@ namespace GithubClone.Application.Mapping
 
             CreateMap<Branch, BranchDto>().ReverseMap();
 
+            CreateMap<CreatePullRequestDto, PullRequest>().ReverseMap();
+
+            CreateMap<PullRequest, PullRequestDto>().ReverseMap();
+            CreateMap<CreateCommentDto, PullRequestComment>().ReverseMap();
+
+
+
         }
     }
 }

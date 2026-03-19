@@ -35,6 +35,11 @@ namespace GithubClone.Application.Services
             return await _repo.CreateAsync(pr); 
         }
 
+
+
+
+
+
         public async Task<IEnumerable<PullRequestDto>> GetPrs(int repoId)
         {
             var prs = await _repo.GetByRepositoryIdAsync(repoId);
@@ -44,9 +49,10 @@ namespace GithubClone.Application.Services
 
       
 
-        public async Task AddComment(CreateCommentDto dto)
+        public async Task AddComment(CreateCommentDto dto, int userId)
         {
-            var comment = _mapper.Map<PullRequestComment>(dto); 
+            var comment = _mapper.Map<PullRequestComment>(dto);
+            comment.UserId = userId;
             comment.CreatedAt = DateTime.Now;
 
             await _repo.AddCommentAsync(comment);   
@@ -82,14 +88,8 @@ namespace GithubClone.Application.Services
 
         }
 
-        public Task<int> CreateaPR(CreatePullRequestDto dto)
-        {
-            throw new NotImplementedException();
-        }
+     
 
-        public Task<IEnumerable<PullRequestDto>> GetPrs(int repoId)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }
