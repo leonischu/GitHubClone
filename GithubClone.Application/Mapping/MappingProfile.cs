@@ -28,7 +28,9 @@ namespace GithubClone.Application.Mapping
             CreateMap<PullRequest, PullRequestDto>().ReverseMap();
             CreateMap<CreateCommentDto, PullRequestComment>().ReverseMap();
 
-
+            CreateMap<CreateIssueDto, Issue>();
+            CreateMap<Issue, IssueDto>();
+            CreateMap<CreateIssueCommentDto, IssueComment>();
 
         }
     }

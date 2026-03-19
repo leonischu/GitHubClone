@@ -51,7 +51,9 @@ builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IPullRequestRepository, PullRequestRepository>();
 builder.Services.AddScoped<IPullRequestService, PullRequestService>();
 
-
+//For Issue 
+builder.Services.AddScoped<IIssueService, IssueService>();
+builder.Services.AddScoped<IIssueRepository, IssueRepository>();
 
 try
 {
