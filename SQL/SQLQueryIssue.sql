@@ -1,0 +1,20 @@
+CREATE TABLE Issues
+(
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    RepositoryId INT NOT NULL,
+    Title NVARCHAR(200) NOT NULL,
+    Description NVARCHAR(MAX) NULL,
+    Status NVARCHAR(50) NOT NULL DEFAULT 'Open',
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE()
+);
+
+
+-- IssueComments table
+CREATE TABLE IssueComments
+(
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    IssueId INT NOT NULL,
+    UserId INT NOT NULL,
+    Comment NVARCHAR(MAX) NOT NULL,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE()
+);
