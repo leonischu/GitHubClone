@@ -32,7 +32,7 @@ namespace GithubClone.Infrastructure.Repository
 
         public async Task<IEnumerable<Issue>> GetByRepositoryIdAsync(int repositoryId)
         {
-            var query = "SELECT * FROM Issue WHERE RepositoryId = @repositoryId";
+            var query = "SELECT * FROM Issues WHERE RepositoryId = @repositoryId";
             using var connection = _context.CreateConnection();
             return await connection.QueryAsync<Issue>(query, new { repositoryId });
         }

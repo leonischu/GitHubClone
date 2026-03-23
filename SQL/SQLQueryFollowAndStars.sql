@@ -1,0 +1,18 @@
+--Stars
+CREATE TABLE Stars 
+(
+Id INT IDENTITY PRIMARY KEY,
+UserId INT NOT NULL,
+RepositoryId INT NOT NULL,
+CreatedAt DATETIME2 DEFAULT GETUTCDATE()
+);
+
+-- Follows
+
+CREATE TABLE Follows
+(
+    Id INT IDENTITY PRIMARY KEY,
+    FollowerId INT NOT NULL,
+    FollowingId INT NOT NULL,
+    CreatedAt DATETIME2 DEFAULT GETUTCDATE()
+);
