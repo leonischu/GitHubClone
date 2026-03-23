@@ -50,13 +50,11 @@ namespace GithubClone.Api.Controllers
         }
 
         [HttpPost("{id}/merge")]
-
-        public async Task<IActionResult>Merge(int id)
+        public async Task<IActionResult> Merge(int id, int sourceBranchId, int targetBranchId)
         {
-            await _service.MergePR(id);
-            return Ok("Pull request merged sucessfully");
+            await _service.MergePR(id, sourceBranchId, targetBranchId);
+            return Ok("Merged successfully");
         }
-
 
 
 

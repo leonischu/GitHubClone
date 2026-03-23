@@ -103,8 +103,8 @@ namespace GithubClone.Infrastructure.Repository
             {
                 //  Copy commits from source → target
                 var copyCommitsSql = @"
-                INSERT INTO Commits (Message, RepositoryId, BranchId, CreatedAt)
-                SELECT Message, RepositoryId, @targetBranchId, GETUTCDATE()
+                INSERT INTO Commits (Message, RepositoryId, BranchId, CreatedAt,CreatedBy)
+                SELECT Message, RepositoryId, @targetBranchId, GETUTCDATE(),CreatedBy
                 FROM Commits
                 WHERE BranchId = @sourceBranchId";
 

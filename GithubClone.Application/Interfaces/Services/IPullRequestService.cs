@@ -13,6 +13,6 @@ namespace GithubClone.Application.Interfaces.Services
         Task<IEnumerable<PullRequestDto>> GetPrs(int repoId);
         Task AddComment(CreateCommentDto dto,int userId);
         Task ClosePR(int prId);
-        Task MergePR(int prId);
+        Task MergePR(int prId, int sourceBranchId, int targetBranchId);
     }
 }

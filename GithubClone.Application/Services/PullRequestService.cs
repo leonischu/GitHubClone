@@ -69,7 +69,7 @@ namespace GithubClone.Application.Services
                 throw new Exception("Only open PR can be closed");
             await _repo.UpdateStatus(prId, "Closed");
         }
-        public async Task MergePR(int prId)
+        public async Task MergePR(int prId, int sourceBranchId, int targetBranchId)
         {
             var pr = await _repo.GetByIdAsync(prId);
 
@@ -80,12 +80,12 @@ namespace GithubClone.Application.Services
 
             //Logic for merge
             // 1. Copy commit from source to target
-              
-            await _repo.CopyCommits(pr.SourceBranchId,pr.TargetBranchId);
+
+            //await _repo.CopyCommits(pr.SourceBranchId,pr.TargetBranchId);
 
             // 2. Update status 
-            await _repo.UpdateStatus(prId, "Merged");
-
+            //await _repo.UpdateStatus(prId, "Merged");
+            await _repo.MergePullRequest(prId, sourceBranchId, targetBranchId);
         }
 
      

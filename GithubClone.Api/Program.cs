@@ -139,23 +139,12 @@ builder.Services.AddAuthorization();
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 var app = builder.Build();
 
 
 
 
-//Global Error Handler
+//Global   Error Handler
 
 app.Use(async (context, next) =>
 {
