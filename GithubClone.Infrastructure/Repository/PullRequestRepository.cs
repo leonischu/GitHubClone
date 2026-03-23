@@ -90,5 +90,55 @@ namespace GithubClone.Infrastructure.Repository
             using var connection = _context.CreateConnection();
             await connection.ExecuteAsync(sql, new { prId, status });
         }
+
+        //Handle the transaction 
+        public async Task MergePullRequest(int prId, int sourceBranchId, int targetBranchId)
+        {
+            using var connection = _context.CreateConnection();
+            connection.Open();
+
+            using var transaction = connection.BeginTransaction();
+
+            try
+            {
+                //  Copy commits from source → target
+                var copyCommitsSql = @"
+                INSERT INTO Commits (Message, RepositoryId, BranchId, CreatedAt)
+                SELECT Message, RepositoryId, @targetBranchId, GETUTCDATE()
+                FROM Commits
+                WHERE BranchId = @sourceBranchId";
+
+                await connection.ExecuteAsync(copyCommitsSql, new
+                {
+                    sourceBranchId,
+                    targetBranchId
+                }, transaction);
+
+                //  Update PR status
+                var updatePrSql = @"
+                UPDATE PullRequests
+                SET Status = 'Merged'
+                WHERE Id = @prId";
+
+                await connection.ExecuteAsync(updatePrSql, new { prId }, transaction);
+
+                // EVERYTHING SUCCESS → SAVE
+                transaction.Commit();
+            }
+            catch
+            {
+                //  ANY ERROR → ROLLBACK
+                transaction.Rollback();
+                throw;
+            }
+        }
     }
+
+
+
+
+
+
+
+
 }

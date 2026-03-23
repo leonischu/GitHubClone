@@ -19,5 +19,8 @@ namespace GithubClone.Application.Interfaces.Repository
         Task CopyCommits(int sourceBranchId, int targetBranchId); // take commit from the source and copy it to target 
 
         Task UpdateStatus(int prId, string status); // Change the PR status open,closed, merged
+
+
+        Task MergePullRequest(int prId, int sourceBranchId, int targetBranchId);
     }
 }

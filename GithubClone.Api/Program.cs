@@ -152,9 +152,41 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// ---------------- Middleware ----------------
 
-if (app.Environment.IsDevelopment())
+
+
+//Global Error Handler
+
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next();
+    }
+    catch (Exception ex)
+    {
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+
+        var response = new
+        {
+            message = ex.Message,
+            success = false
+        };
+
+        await context.Response.WriteAsJsonAsync(response);
+
+    }
+});
+
+
+
+
+
+
+    // ---------------- Middleware ----------------
+
+    if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
