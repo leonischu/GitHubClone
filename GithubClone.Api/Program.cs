@@ -55,6 +55,15 @@ builder.Services.AddScoped<IPullRequestService, PullRequestService>();
 builder.Services.AddScoped<IIssueService, IssueService>();
 builder.Services.AddScoped<IIssueRepository, IssueRepository>();
 
+
+//For Social Features
+builder.Services.AddScoped<ISocialRepository, SocialRepository>();
+builder.Services.AddScoped<ISocialService, SocialService>();
+
+
+
+
+
 try
 {
     builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
