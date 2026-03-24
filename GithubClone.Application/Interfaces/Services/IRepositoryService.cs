@@ -9,6 +9,7 @@ namespace GithubClone.Application.Interfaces.Services
 {
     public interface IRepositoryService
     {
+        Task<IEnumerable<RepositoryDto>> GetRepositories(int userId, int pageNumber, int pageSize);
         Task<RepositoryDto> CreateAsync(int userId, CreateRepositoryDto dto);
          Task<IEnumerable<RepositoryDto>> GetUserRepository(int userId);
 

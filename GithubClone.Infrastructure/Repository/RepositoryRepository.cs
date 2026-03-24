@@ -73,9 +73,19 @@ namespace GithubClone.Infrastructure.Repository
             await connection.ExecuteAsync(query, new { id });
         }
 
-
-
-
-
+        public async Task<IEnumerable<Repositories>> GetRepositories(int userId, int pageNumber, int pageSize)
+        {
+            var sql = @"SELECT * FROM Repositories
+                        WHERE OwnerId = @userId
+                        ORDER BY CreatedAt DESC 
+                        OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY";
+            using var connection = _context.CreateConnection();
+            return await connection.QueryAsync<Repositories>(sql, new
+            {
+                userId,
+                offset = (pageNumber - 1) * pageSize,
+                pageSize
+            });
+        }
     }
 }

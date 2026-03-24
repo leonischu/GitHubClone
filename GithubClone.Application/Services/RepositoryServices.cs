@@ -80,6 +80,12 @@ namespace GithubClone.Application.Services
         }
 
 
+        public async Task<IEnumerable<RepositoryDto>> GetRepositories(int userId, int pageNumber, int pageSize)
+        {
+            var repos = await _repository.GetRepositories(userId, pageNumber, pageSize);
+            return _mapper.Map<IEnumerable<RepositoryDto>>(repos);
+        }
+
 
 
     }

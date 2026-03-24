@@ -101,7 +101,9 @@ namespace GithubClone.Infrastructure.Repository
 
             try
             {
-                //  Copy commits from source → target
+                //  Copy commits from source to target
+
+
                 var copyCommitsSql = @"
                 INSERT INTO Commits (Message, RepositoryId, BranchId, CreatedAt,CreatedBy)
                 SELECT Message, RepositoryId, @targetBranchId, GETUTCDATE(),CreatedBy
@@ -122,12 +124,12 @@ namespace GithubClone.Infrastructure.Repository
 
                 await connection.ExecuteAsync(updatePrSql, new { prId }, transaction);
 
-                // EVERYTHING SUCCESS → SAVE
+                // EVERYTHING SUCCESS THEN SAVE
                 transaction.Commit();
             }
             catch
             {
-                //  ANY ERROR → ROLLBACK
+                //  ANY ERROR THEN ROLLBACK
                 transaction.Rollback();
                 throw;
             }

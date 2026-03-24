@@ -25,6 +25,20 @@ namespace GithubClone.Api.Controllers
             return int.Parse(User.FindFirst("id").Value);
         }
 
+
+        [HttpGet("all")]
+        public async Task<IActionResult> GetRepositories([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            var userId = int.Parse(User.FindFirst("id").Value);
+
+            var repos = await _service.GetRepositories(userId, pageNumber, pageSize);
+
+            return Ok(repos);
+        }
+
+
+
+
         [HttpPost]
         public async Task<IActionResult>Create(CreateRepositoryDto dto)
         {
