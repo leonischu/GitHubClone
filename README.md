@@ -42,6 +42,20 @@ Built as a learning project to master backend  using .NET.
     - Follow / Unfollow users
     - Star / Unstar repositories
     - Activity feed system
+    
+###  Transaction Management
+
+    - Ensures multiple database operations execute as a single unit
+    - Maintains data consistency and integrity
+    - Prevents partial updates during critical operations like Pull Request merge
+    
+    Example:
+    - When merging a pull request:
+      - PR status is updated
+      - Commit is created
+      - Changes are applied
+
+If any step fails, all changes are rolled back automaticall
 
 ###  Performance
     - Dapper for fast database operations
@@ -63,6 +77,7 @@ Built as a learning project to master backend  using .NET.
     - SQL Server
     - JWT Authentication
     - AutoMapper
+    - Transactions
 
 ---
 
@@ -72,6 +87,7 @@ Built as a learning project to master backend  using .NET.
     - Repository Pattern
     - Dependency Injection
     - JWT Authentication
+    - Transactions
     - Pagination (OFFSET-FETCH)
     - API Response Wrapper
     - Async/Await Best Practices
