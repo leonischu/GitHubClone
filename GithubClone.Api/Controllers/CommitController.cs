@@ -1,8 +1,10 @@
 ﻿using GithubClone.Application.DTOs;
 using GithubClone.Application.Interfaces.Services;
+using GithubClone.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace GithubClone.Api.Controllers
 {
@@ -26,17 +28,59 @@ namespace GithubClone.Api.Controllers
 
         public async Task<IActionResult>Create(CreateCommitDto dto)
         {
-            var userId = GetUserId();
-            await _service.CreateCommitAsync(userId, dto);
-            return Ok();
+
+            var response = new APIResponse();
+            try
+            {
+
+               var userId = GetUserId();
+                await _service.CreateCommitAsync(userId, dto);
+
+                response.Status = true;
+                response.StatusCode = HttpStatusCode.Created;
+                response.Data = "Commit Created Sucessfully";
+                return Ok(response);
+
+
+            } 
+            catch (Exception ex) 
+            { 
+                response.Status = false;
+                response.StatusCode = HttpStatusCode.BadRequest;
+                response.Errors.Add(ex.Message);
+                return BadRequest(response);
+            
+                }
         }
 
         [HttpGet("{repoId}")]
 
         public async Task<IActionResult>GetCommits(int repoId)
         {
-            var commits = await _service.GetCommits(repoId);
-            return Ok(commits); 
+            var response = new APIResponse();
+            try
+            {
+                var commits = await _service.GetCommits(repoId);
+
+                response.Status = true;
+                response.StatusCode = HttpStatusCode.OK;
+                response.Data = commits;
+
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Status = false;
+                response.StatusCode = HttpStatusCode.BadRequest;
+                response.Errors.Add(ex.Message);
+                return BadRequest(response);
+
+            }
+
+
+
+
         }
 
 
@@ -45,9 +89,24 @@ namespace GithubClone.Api.Controllers
         [HttpGet("branch/{branchId}")]
         public async Task<IActionResult> GetByBranch(int branchId)
         {
-            var commits = await _service.GetCommitsByBranch(branchId);
+            var response = new APIResponse();
+            try
+            {
+                var commits = await _service.GetCommitsByBranch(branchId);
+                response.Status = true;
+                response.StatusCode = HttpStatusCode.OK;
+                response.Data = commits;
 
-            return Ok(commits);
+
+                return Ok(response);
+            }
+            catch (Exception ex) {
+
+                response.Status = false;
+                response.StatusCode = HttpStatusCode.BadRequest;
+                response.Errors.Add(ex.Message);
+                return BadRequest(response);
+            }
         }
 
     }
