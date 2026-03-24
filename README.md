@@ -70,7 +70,7 @@ If any step fails, all changes are rolled back automaticall
     
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
     - ASP.NET Core Web API
     - Dapper (Micro ORM)
@@ -81,7 +81,7 @@ If any step fails, all changes are rolled back automaticall
 
 ---
 
-## 📊 Key Concepts Implemented
+##  Key Concepts Implemented
 
     - Clean Architecture
     - Repository Pattern
@@ -94,7 +94,7 @@ If any step fails, all changes are rolled back automaticall
 
 ---
 
-## 🚀 API Endpoints (Sample)
+##  API Endpoints (Sample)
 
 ### Auth
 - `POST /api/auth/register`
@@ -137,7 +137,7 @@ If any step fails, all changes are rolled back automaticall
 
 ---
 
-## 🧪 How to Run
+##  How to Run
 
     1. Clone the repository
     ```bash
