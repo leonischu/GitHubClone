@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Text;
+using System.Threading.RateLimiting;
 //using GithubClone.Infrastructure.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -139,6 +140,54 @@ builder.Services.AddAuthorization();
 
 
 
+
+// Rate Limiter 
+
+builder.Services.AddRateLimiter(options =>
+{
+
+    //Handle rate limiting
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.StatusCode = 429;
+        await context.HttpContext.Response.WriteAsync("Too many requests. Try again later.");
+    };
+
+
+
+    //  Login limit (strict)
+    options.AddPolicy("login-policy", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            context.Connection.RemoteIpAddress?.ToString(),
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5, // 5 requests
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            }));
+
+    //  General api limit
+    options.AddPolicy("api-policy", context =>
+        RateLimitPartition.GetTokenBucketLimiter(
+            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new TokenBucketRateLimiterOptions
+            {
+                TokenLimit = 100,
+                TokensPerPeriod = 50,
+                ReplenishmentPeriod = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            }));
+});
+
+
+
+
+
+
+
+
+
+
 var app = builder.Build();
 
 
@@ -181,6 +230,22 @@ app.Use(async (context, next) =>
     app.UseSwaggerUI();
 
 }
+
+
+
+
+
+
+app.UseRateLimiter();
+
+
+
+
+
+
+
+
+
 
 app.UseHttpsRedirection();
 

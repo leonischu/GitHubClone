@@ -3,12 +3,15 @@ using GithubClone.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace GithubClone.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+   
+
     public class RepositoryController : ControllerBase
     {
         private readonly IRepositoryService _service;
@@ -40,6 +43,7 @@ namespace GithubClone.Api.Controllers
 
 
         [HttpPost]
+        [EnableRateLimiting("repo-policy")]
         public async Task<IActionResult>Create(CreateRepositoryDto dto)
         {
             var userId = GetUserId();

@@ -3,11 +3,13 @@ using GithubClone.Application.Interfaces.Services;
 using GithubClone.Application.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace GithubClone.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableRateLimiting("login-policy")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _service;
