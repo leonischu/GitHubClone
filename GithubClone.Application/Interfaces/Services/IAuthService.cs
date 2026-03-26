@@ -11,5 +11,11 @@ namespace GithubClone.Application.Interfaces.Services
     {
         Task<UserDto> RegisterAsync(RegisterDto dto);
         Task<string>LoginAsync(LoginDto dto);
+        Task<bool> VerifyEmailAsync(string token);
+    }
+
+    public interface IEmailService
+    {
+        Task SendEmailAsync(string to, string subject, string body);
     }
 }

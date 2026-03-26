@@ -21,70 +21,116 @@ namespace GithubClone.Application.Services
         private readonly IUserRepository _repo;
         private readonly IConfiguration _config;
         private readonly IMapper _mapper;
+        private readonly IEmailService _emailService;
 
-
-        public AuthServices(IUserRepository repo, IConfiguration config, IMapper mapper)
+        public AuthServices(
+            IUserRepository repo,
+            IConfiguration config,
+            IMapper mapper,
+            IEmailService emailService)
         {
             _repo = repo;
             _config = config;
             _mapper = mapper;
+            _emailService = emailService;
         }
+
         public async Task<UserDto> RegisterAsync(RegisterDto dto)
         {
-            //Check if user already exists
             var existingUser = await _repo.GetByEmailAsync(dto.Email);
             if (existingUser != null)
                 throw new Exception("User already exists");
 
-            //Username = dto.Username,
-            //Email = dto.Email,
-
-            // Use IMapper instead of these two 
-
             var user = _mapper.Map<User>(dto);
 
-
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
-                user.CreatedAt = DateTime.UtcNow;
-                await _repo.CreateAsync(user);
+            user.CreatedAt = DateTime.UtcNow;
 
-            return   _mapper.Map<UserDto>(user);
+            // email verificaiton
+            user.IsEmailVerified = false;
+            user.EmailVerificationToken = Guid.NewGuid().ToString();
+            user.EmailVerificationTokenExpiry = DateTime.UtcNow.AddHours(24);
 
+            await _repo.CreateAsync(user);
 
+            //   link
+            var verificationLink =
+                $"{_config["App:BaseUrl"]}/api/auth/verify-email?email={Uri.EscapeDataString(user.Email)}&token={Uri.EscapeDataString(user.EmailVerificationToken)}";
 
+            //  email
+            var body = $@"
+        <h2>Email Verification</h2>
+        <p>Click the button below to verify your account:</p>
+        <a href='{verificationLink}' 
+           style='padding:10px 20px;background-color:#007bff;color:white;text-decoration:none;border-radius:5px;'>
+           Verify Email
+        </a>
+        <p>This link will expire in 24 hours.</p>
+    ";
+
+            await _emailService.SendEmailAsync(
+                user.Email,
+                "Verify your email",
+                body
+            );
+
+            return _mapper.Map<UserDto>(user);
         }
+
         public async Task<string> LoginAsync(LoginDto dto)
         {
             var user = await _repo.GetByEmailAsync(dto.Email);
-            if(user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
-            {
-                throw new Exception("Invalid credintials");
-            }
+
+            if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
+                throw new Exception("Invalid credentials");
+
+            //  Block login
+            if (!user.IsEmailVerified)
+                throw new Exception("Please verify your email first");
 
             var claims = new[]
             {
+            new Claim("id", user.Id.ToString()),
+            new Claim("username", user.Username),
+            new Claim("email", user.Email)
+        };
 
-                //Claims are infromation that goes into the token
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_config["Jwt:Key"])
+            );
 
-                new Claim("id",user.Id.ToString()),
-                new Claim("username",user.Username),
-                new Claim("email",user.Email)
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));   //Fetches secret key from the appsetting,converts string into bytes and create a security key object for signing with jwt
             var token = new JwtSecurityToken(
-                 issuer: _config["Jwt:Issuer"],
-                claims: claims, //includes array of claims
+                issuer: _config["Jwt:Issuer"],
+                claims: claims,
                 expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials:
                     new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
-                );
+            );
+
             return new JwtSecurityTokenHandler().WriteToken(token);
-
-
-
         }
 
+        // Verify email
+        public async Task<bool> VerifyEmailAsync(string token)
+        {
+            var user = await _repo.GetByVerificationTokenAsync(token);
 
+            if (user == null)
+                throw new Exception("Invalid token");
+
+            if (user.EmailVerificationTokenExpiry < DateTime.UtcNow)
+                throw new Exception("Token expired");
+
+            user.IsEmailVerified = true;
+            user.EmailVerificationToken = null;
+            user.EmailVerificationTokenExpiry = null;
+
+            await _repo.UpdateAsync(user);
+
+            return true;
+        }
     }
+
+
 }
+

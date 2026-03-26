@@ -4,6 +4,7 @@ using GithubClone.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Net;
 
 namespace GithubClone.Api.Controllers
@@ -53,7 +54,10 @@ namespace GithubClone.Api.Controllers
                 }
         }
 
+        [EnableRateLimiting("api-policy")]
+
         [HttpGet("{repoId}")]
+
 
         public async Task<IActionResult>GetCommits(int repoId)
         {

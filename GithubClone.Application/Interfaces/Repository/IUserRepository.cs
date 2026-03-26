@@ -10,8 +10,10 @@ namespace GithubClone.Application.Interfaces.Repository
     public interface IUserRepository
     {
         Task<int> CreateAsync(User user);
-        Task<User?> GetByEmailAsync(string email);  
+        Task<User?> GetByEmailAsync(string email);
 
+        Task<User?> GetByVerificationTokenAsync(string token);
+        Task UpdateAsync(User user);
 
     }
 }

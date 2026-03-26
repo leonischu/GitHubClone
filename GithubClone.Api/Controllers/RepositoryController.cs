@@ -28,7 +28,7 @@ namespace GithubClone.Api.Controllers
             return int.Parse(User.FindFirst("id").Value);
         }
 
-
+        [EnableRateLimiting("api-policy")]
         [HttpGet("all")]
         public async Task<IActionResult> GetRepositories([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
@@ -43,7 +43,7 @@ namespace GithubClone.Api.Controllers
 
 
         [HttpPost]
-        [EnableRateLimiting("repo-policy")]
+        //[EnableRateLimiting("repo-policy")]
         public async Task<IActionResult>Create(CreateRepositoryDto dto)
         {
             var userId = GetUserId();
@@ -51,6 +51,8 @@ namespace GithubClone.Api.Controllers
             return Ok(repo);    
 
         }
+
+        [EnableRateLimiting("api-policy")]
 
         [HttpGet]
 

@@ -22,8 +22,8 @@ namespace GithubClone.Application.Repository
         }
         public async Task<int> CreateAsync(User user)
         {
-            var query = @"INSERT INTO Users (Username,Email,PasswordHash,CreatedAt) 
-                        VALUES (@Username,@Email,@PasswordHash,@CreatedAt);
+            var query = @"INSERT INTO Users (Username,Email,PasswordHash,CreatedAt, IsEmailVerified, EmailVerificationToken, EmailVerificationTokenExpiry) 
+                        VALUES (@Username,@Email,@PasswordHash,@CreatedAt, @IsEmailVerified, @EmailVerificationToken, @EmailVerificationTokenExpiry);
                         SELECT CAST(SCOPE_IDENTITY() as int );";
             using var connection = _context.CreateConnection();
             return await connection.ExecuteScalarAsync<int>(query, user);
@@ -38,5 +38,30 @@ namespace GithubClone.Application.Repository
             parameters.Add("Email", email);     
             return await connection.QueryFirstOrDefaultAsync<User>(query, parameters);
         }
+
+        public async Task<User?> GetByVerificationTokenAsync(string token)
+        {
+            var query = "SELECT * FROM Users WHERE EmailVerificationToken = @Token";
+            using var connection = _context.CreateConnection();
+            return await connection.QueryFirstOrDefaultAsync<User>(query, new { Token = token });
+        }
+        public async Task UpdateAsync(User user)
+        {
+            var query = @"
+        UPDATE Users
+        SET 
+            Username = @Username,
+            Email = @Email,
+            PasswordHash = @PasswordHash,
+            IsEmailVerified = @IsEmailVerified,
+            EmailVerificationToken = @EmailVerificationToken,
+            EmailVerificationTokenExpiry = @EmailVerificationTokenExpiry
+        WHERE Id = @Id
+    ";
+            using var connection = _context.CreateConnection();
+
+            await connection.ExecuteAsync(query, user);
+        }
+
     }
 }

@@ -62,7 +62,7 @@ builder.Services.AddScoped<ISocialRepository, SocialRepository>();
 builder.Services.AddScoped<ISocialService, SocialService>();
 
 
-
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 
 try
@@ -172,10 +172,10 @@ builder.Services.AddRateLimiter(options =>
             context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
             _ => new TokenBucketRateLimiterOptions
             {
-                TokenLimit = 100,
-                TokensPerPeriod = 50,
+                TokenLimit = 100,  //Maximum number of token , 100 request instantly 
+                TokensPerPeriod = 50, // 50 requests per minute added back
                 ReplenishmentPeriod = TimeSpan.FromMinutes(1),
-                QueueLimit = 0
+                QueueLimit = 0 // when it is 0 no waiting reject immediately
             }));
 });
 

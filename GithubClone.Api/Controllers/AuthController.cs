@@ -36,6 +36,11 @@ namespace GithubClone.Api.Controllers
             return Ok(token);
         }
 
-
+        [HttpGet("verify-email")]
+        public async Task<IActionResult> VerifyEmail(string token)
+        {
+            await _service.VerifyEmailAsync(token);
+            return Ok("Email verified successfully");
+        }
     }
 }
