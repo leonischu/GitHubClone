@@ -10,10 +10,29 @@ Built as a learning project to master backend  using .NET.
 ##  Features
 
 ###  Authentication
-    - User registration & login
+    - User registration with email verification & login
     - JWT-based authentication
     - Secure password hashing
+### Email Verification
 
+        To ensure only valid users can access the system, email verification is implemented during registration.
+
+        Flow
+        User registers with email and password
+        A unique verification token is generated (GUID)
+        Token and expiry time (24 hours) are stored in the database
+        A verification link is sent to the user's email
+        User clicks the link -> /api/auth/verify-email?token=...
+        Backend validates the token and marks the email as verified
+        User can now log in successfully
+
+Rate Limiting
+
+        Rate limiting is implemented to protect the API from abuse and excessive requests.
+        To prevent brute-force attacks (especially on login)
+
+
+     
 ###  Repository Management
     - Create, update, delete repositories
     - Pagination support
@@ -76,6 +95,7 @@ If any step fails, all changes are rolled back automaticall
     - Dapper (Micro ORM)
     - SQL Server
     - JWT Authentication
+    - Email Verification
     - AutoMapper
     - Transactions
 
@@ -99,6 +119,7 @@ If any step fails, all changes are rolled back automaticall
 ### Auth
 - `POST /api/auth/register`
 - `POST /api/auth/login`
+- `GET /api/auth/verify-email`
 
 ### Repository
 - `GET /api/repository/all?pageNumber=1&pageSize=10`
