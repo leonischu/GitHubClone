@@ -31,7 +31,10 @@ Rate Limiting
         Rate limiting is implemented to protect the API from abuse and excessive requests.
         To prevent brute-force attacks (especially on login)
 
+Real-Time Notifications with SignalR
 
+    This project uses SignalR to enable real-time communication between the server and clients. It allows the backend to instantly 
+    push notifications to users without requiring them to refresh the page.
      
 ###  Repository Management
     - Create, update, delete repositories
