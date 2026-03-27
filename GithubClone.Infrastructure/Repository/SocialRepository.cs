@@ -19,6 +19,25 @@ namespace GithubClone.Infrastructure.Repository
         {
             _context = context; 
         }
+        //Get By Id 
+
+        public async Task <Repositories?>GetRepoById(int repoId)
+        {
+            var sql = @"SELECT * FROM Repositories WHERE Id = @repoId";
+
+            using var connection = _context.CreateConnection();
+
+            return await connection.QueryFirstOrDefaultAsync<Repositories>(
+                sql,
+                new { repoId }
+            );
+        }
+
+
+
+
+
+
 
 
         //To Add the stars

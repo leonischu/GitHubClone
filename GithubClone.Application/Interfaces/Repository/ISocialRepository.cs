@@ -12,7 +12,7 @@ namespace GithubClone.Application.Interfaces.Repository
         Task AddStar(int userId, int repoId);
         Task RemoveStar(int userId, int repoId);
         Task<int> GetStarCount(int repoId);
-
+        Task<Repositories?> GetRepoById(int repoId);
 
         Task FollowUser(int followerId, int followingId);
         Task UnfollowUser(int followerId, int followingId);

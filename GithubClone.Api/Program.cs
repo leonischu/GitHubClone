@@ -5,7 +5,10 @@ using GithubClone.Application.Repository;
 using GithubClone.Application.Services;
 using GithubClone.Infrastructure.Database;
 using GithubClone.Infrastructure.Repository;
+using GithubClone.Infrastructure.SignalR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
@@ -61,9 +64,31 @@ builder.Services.AddScoped<IIssueRepository, IssueRepository>();
 builder.Services.AddScoped<ISocialRepository, SocialRepository>();
 builder.Services.AddScoped<ISocialService, SocialService>();
 
-
+//To send email verificaiton
 builder.Services.AddScoped<IEmailService, EmailService>();
 
+//For signalR
+
+builder.Services.AddSignalR();
+
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
+builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+
+
+//CORS
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials()
+        .SetIsOriginAllowed(_ => true);
+    });
+});
 
 try
 {
@@ -134,6 +159,25 @@ builder.Services.AddAuthentication("Bearer")
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
             )
         };
+        //For signalR 
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    path.StartsWithSegments("/hubs/notifications"))
+                {
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
+            }
+
+        };
+           
     });
 
 builder.Services.AddAuthorization();
@@ -218,13 +262,13 @@ app.Use(async (context, next) =>
 });
 
 
+app.UseCors("AllowAll");
 
 
 
+// ---------------- Middleware ----------------
 
-    // ---------------- Middleware ----------------
-
-    if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -253,5 +297,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<NotificationHub>("/hubs/notifications");
 
 app.Run();

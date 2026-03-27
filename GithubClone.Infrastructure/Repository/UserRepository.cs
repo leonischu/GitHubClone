@@ -57,7 +57,7 @@ namespace GithubClone.Application.Repository
             EmailVerificationToken = @EmailVerificationToken,
             EmailVerificationTokenExpiry = @EmailVerificationTokenExpiry
         WHERE Id = @Id
-    ";
+         ";
             using var connection = _context.CreateConnection();
 
             await connection.ExecuteAsync(query, user);
@@ -65,3 +65,4 @@ namespace GithubClone.Application.Repository
 
     }
 }
+   

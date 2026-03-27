@@ -15,5 +15,6 @@ namespace GithubClone.Application.Interfaces.Repository
         Task<User?> GetByVerificationTokenAsync(string token);
         Task UpdateAsync(User user);
 
+
     }
 }

@@ -12,14 +12,27 @@ namespace GithubClone.Application.Services
     public class SocialService : ISocialService
     {
         private readonly ISocialRepository _repo;
-        public SocialService(ISocialRepository repo)
+
+        private readonly INotificationService _notificationService;
+        public SocialService(ISocialRepository repo, INotificationService notificationService)
         {
             _repo = repo;
+            _notificationService = notificationService; 
             
         }
         public async Task StarRepo(int userId, int repoId)
         {
             await _repo.AddStar(userId, repoId);
+
+            //Notify the repo owner 
+            var repo = await _repo.GetRepoById(repoId);
+            if(repo!=null && repo.OwnerId != userId)
+            {
+                await _notificationService.SendNotificationAsync(
+                    repo.OwnerId.ToString(),
+                    $"User{userId} starred your repository");
+            }
+
         }
 
 
@@ -36,6 +49,12 @@ namespace GithubClone.Application.Services
         public async Task Follow(int userId, int followingId)
         {
            await _repo.FollowUser(userId, followingId);
+
+            if(userId != followingId)
+            {
+                await _notificationService.SendNotificationAsync(followingId.ToString(),
+                    $"User {userId} started following you");
+            }
         }
 
 
