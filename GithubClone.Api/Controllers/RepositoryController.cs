@@ -27,7 +27,15 @@ namespace GithubClone.Api.Controllers
 
         private int GetUserId()
         {
-            return int.Parse(User.FindFirst("id").Value);
+            var userIdClaim = User.FindFirst("id");
+
+            if (userIdClaim == null)
+            {
+                _logger.LogWarning("UserId claim missing in token");
+                throw new UnauthorizedAccessException("Invalid token");
+            }
+
+            return int.Parse(userIdClaim.Value);
         }
 
         [EnableRateLimiting("api-policy")]
@@ -35,6 +43,8 @@ namespace GithubClone.Api.Controllers
         public async Task<IActionResult> GetRepositories([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             var userId = int.Parse(User.FindFirst("id").Value);
+
+            _logger.LogInformation("Fetching paginated for UserId:{UserId}", userId);
 
             var repos = await _service.GetRepositories(userId, pageNumber, pageSize);
 
@@ -48,10 +58,7 @@ namespace GithubClone.Api.Controllers
         //[EnableRateLimiting("repo-policy")]
         public async Task<IActionResult>Create(CreateRepositoryDto dto)
         {
-            //_logger.LogInformation("Api Hit: CreateRepo");
-
-            //try
-            //{
+ 
                 var userId = GetUserId(); 
 
             _logger.LogInformation("API Hit: CreateRepo for UserId: {UserId}", userId);
@@ -59,13 +66,7 @@ namespace GithubClone.Api.Controllers
 
             var repo = await _service.CreateAsync(userId, dto);
                 return Ok(repo);
-            //}
-            //catch(Exception ex)
-            //{
-                //_logger.LogError(ex, "Error in CreateRepo");
-                //return StatusCode(500, "Internal Server Error"); 
-            //}
-
+       
         }
 
         [EnableRateLimiting("api-policy")]
@@ -75,6 +76,8 @@ namespace GithubClone.Api.Controllers
         public async Task<IActionResult> GetMyRepository()
         {
             var userId = GetUserId();
+            _logger.LogInformation("Fetching user repositories for UserId: {UserId}", userId);
+
             var repos = await _service.GetUserRepository(userId);
             return Ok(repos);   
         }
@@ -82,6 +85,8 @@ namespace GithubClone.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdateRepositoryDto dto)
         {
+            _logger.LogInformation("Updating repository Id: {RepoId}", id);
+
             await _service.UpdateAsync(id, dto);
 
             return Ok();
@@ -90,6 +95,7 @@ namespace GithubClone.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
+            _logger.LogInformation("Deleting repository Id: {RepoId}", id);
             await _service.DeleteAsync(id);
 
             return Ok();

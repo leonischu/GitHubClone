@@ -75,36 +75,80 @@ namespace GithubClone.Application.Services
 
         public async Task<IEnumerable<RepositoryDto>> GetUserRepository(int userId)
         {
-            var repos = await _repository.GetByUserIdAsync(userId);
+            _logger.LogInformation("Fetching repositories for UserId: {UserId}", userId);
+            try
+            {
+                var repos = await _repository.GetByUserIdAsync(userId);
+                _logger.LogInformation("Fetched {Count} repositories for UserId:{UserId}", repos.Count(), userId);
 
-            return _mapper.Map<IEnumerable<RepositoryDto>>(repos);
+                return _mapper.Map<IEnumerable<RepositoryDto>>(repos);
+            }catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error while fetching repositories for UserId:{UserId}", userId);
+                throw;
+            }
         }
 
         public async Task UpdateAsync(int repoId, UpdateRepositoryDto dto)
         {
-            var repo = await _repository.GetByIdAsync(repoId);
+            _logger.LogInformation("Updating repository Id:{repoId}", repoId);
 
-            if (repo == null)
-                throw new Exception("Repository not found");
-            repo.Name = dto.Name;   
-            repo.Description = dto.Description; 
-            repo.IsPrivate = dto.IsPrivate; 
-            await _repository.UpdateAsync(repo);    
+            try
+            {
+
+
+                var repo = await _repository.GetByIdAsync(repoId);
+
+                if (repo == null)
+                {
+                    _logger.LogWarning("Repository not found with Id: {RepoId}", repoId);
+                    throw new Exception("Repository not found");
+                }
+                repo.Name = dto.Name;
+                repo.Description = dto.Description;
+                repo.IsPrivate = dto.IsPrivate;
+                await _repository.UpdateAsync(repo);
+            }catch(Exception ex)
+            {
+                _logger.LogError("Error updating  repository Id: {RepoId}",repoId);
+                throw;
+            }
         }
 
 
 
         public async Task DeleteAsync(int repoId)
         {
-            await _repository.DeleteAsync(repoId);
 
+            _logger.LogInformation("Deleting repository Id: {RepoId}", repoId);
+
+            try
+            {
+                await _repository.DeleteAsync(repoId);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error deketing repository Id:{RepoId}", repoId);
+                throw;
+            }
         }
 
 
         public async Task<IEnumerable<RepositoryDto>> GetRepositories(int userId, int pageNumber, int pageSize)
         {
-            var repos = await _repository.GetRepositories(userId, pageNumber, pageSize);
-            return _mapper.Map<IEnumerable<RepositoryDto>>(repos);
+            _logger.LogInformation("Fetching paginated repos for UserId: {UserId}, Page: {Page}, Size: {Size}",
+              userId, pageNumber, pageSize);
+            try
+            {
+                var repos = await _repository.GetRepositories(userId, pageNumber, pageSize);
+                _logger.LogInformation("Fetched {Count} repos for UserId: {UserId}", repos.Count(), userId);
+                return _mapper.Map<IEnumerable<RepositoryDto>>(repos);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching paginated repos for UserId: {UserId}", userId);
+                throw;
+            }
         }
 
 
