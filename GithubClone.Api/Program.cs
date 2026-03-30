@@ -1,3 +1,4 @@
+using GithubClone.Api.Middleware;
 using GithubClone.Application.Interfaces.Repository;
 using GithubClone.Application.Interfaces.Services;
 using GithubClone.Application.Mapping;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using System.Reflection;
 using System.Text;
 using System.Threading.RateLimiting;
@@ -224,7 +226,14 @@ builder.Services.AddRateLimiter(options =>
 });
 
 
+//Serilog Config
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
+builder.Host.UseSerilog();
 
 
 
@@ -291,10 +300,14 @@ app.UseRateLimiter();
 
 
 
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+//Global Exception Middleware 
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 

@@ -15,9 +15,11 @@ namespace GithubClone.Api.Controllers
     public class RepositoryController : ControllerBase
     {
         private readonly IRepositoryService _service;
-        public RepositoryController(IRepositoryService service)
+        private readonly  ILogger<RepositoryController> _logger;
+        public RepositoryController(IRepositoryService service,ILogger<RepositoryController> logger )
         {
             _service = service;
+            _logger = logger;
         }
 
 
@@ -46,9 +48,23 @@ namespace GithubClone.Api.Controllers
         //[EnableRateLimiting("repo-policy")]
         public async Task<IActionResult>Create(CreateRepositoryDto dto)
         {
-            var userId = GetUserId();
+            //_logger.LogInformation("Api Hit: CreateRepo");
+
+            //try
+            //{
+                var userId = GetUserId(); 
+
+            _logger.LogInformation("API Hit: CreateRepo for UserId: {UserId}", userId);
+
+
             var repo = await _service.CreateAsync(userId, dto);
-            return Ok(repo);    
+                return Ok(repo);
+            //}
+            //catch(Exception ex)
+            //{
+                //_logger.LogError(ex, "Error in CreateRepo");
+                //return StatusCode(500, "Internal Server Error"); 
+            //}
 
         }
 
