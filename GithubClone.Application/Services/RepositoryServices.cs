@@ -4,11 +4,6 @@ using GithubClone.Application.Interfaces.Repository;
 using GithubClone.Application.Interfaces.Services;
 using GithubClone.Domain.Entities;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GithubClone.Application.Services
 {
@@ -18,41 +13,39 @@ namespace GithubClone.Application.Services
         private readonly IMapper _mapper;
         private readonly IBranchRepository _branchRepo;
         private readonly ILogger<RepositoryServices> _logger;
+        private readonly ICachingServices _cache;
 
         public RepositoryServices(
-                IRepositoryRepository repository ,    
-                IMapper mapper, 
+                IRepositoryRepository repository,
+                IMapper mapper,
                 IBranchRepository branchRepo,
-                ILogger<RepositoryServices> logger
+                ILogger<RepositoryServices> logger,
+                ICachingServices cache
             )
         {
             _repository = repository;
             _branchRepo = branchRepo;
             _mapper = mapper;
             _logger = logger;
-            
+            _cache = cache;
         }
-
-
-
-
 
         public async Task<RepositoryDto> CreateAsync(int userId, CreateRepositoryDto dto)
         {
-
             _logger.LogInformation("Creating repository for UserId:{UserId}", userId);
 
             try
             {
-
                 var repo = _mapper.Map<Repositories>(dto);
                 repo.OwnerId = userId;
                 repo.CreatedAt = DateTime.UtcNow;
+
                 var id = await _repository.CreateAsync(repo);
                 repo.Id = id;
+
                 _logger.LogInformation("Repository created with Id: {RepoId}", repo.Id);
 
-                //Create Default main branch
+                // Create Default main branch
                 await _branchRepo.CreateAsync(new Branch
                 {
                     RepositoryId = repo.Id,
@@ -63,26 +56,31 @@ namespace GithubClone.Application.Services
 
                 _logger.LogInformation("Default branch 'main' created for RepoId: {RepoId}", repo.Id);
 
+                // 🔥 NEW: CLEAR CACHE AFTER CREATE
+                await _cache.RemoveAsync($"repos_{userId}_1_10");
 
                 return _mapper.Map<RepositoryDto>(repo);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 _logger.LogError(ex, "Error while creating repository for UserId:{UserId}", userId);
                 throw;
             }
-            }
-
+        }
 
         public async Task<IEnumerable<RepositoryDto>> GetUserRepository(int userId)
         {
             _logger.LogInformation("Fetching repositories for UserId: {UserId}", userId);
+
             try
             {
                 var repos = await _repository.GetByUserIdAsync(userId);
+
                 _logger.LogInformation("Fetched {Count} repositories for UserId:{UserId}", repos.Count(), userId);
 
                 return _mapper.Map<IEnumerable<RepositoryDto>>(repos);
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while fetching repositories for UserId:{UserId}", userId);
                 throw;
@@ -95,8 +93,6 @@ namespace GithubClone.Application.Services
 
             try
             {
-
-
                 var repo = await _repository.GetByIdAsync(repoId);
 
                 if (repo == null)
@@ -104,54 +100,86 @@ namespace GithubClone.Application.Services
                     _logger.LogWarning("Repository not found with Id: {RepoId}", repoId);
                     throw new Exception("Repository not found");
                 }
+
                 repo.Name = dto.Name;
                 repo.Description = dto.Description;
                 repo.IsPrivate = dto.IsPrivate;
+
                 await _repository.UpdateAsync(repo);
-            }catch(Exception ex)
+
+                //  CLEAR CACHE AFTER UPDATE
+                await _cache.RemoveAsync($"repos_{repo.OwnerId}_1_10");
+            }
+            catch (Exception ex)
             {
-                _logger.LogError("Error updating  repository Id: {RepoId}",repoId);
+                _logger.LogError(ex, "Error updating repository Id: {RepoId}", repoId);
                 throw;
             }
         }
 
-
-
         public async Task DeleteAsync(int repoId)
         {
-
             _logger.LogInformation("Deleting repository Id: {RepoId}", repoId);
 
             try
             {
+                var repo = await _repository.GetByIdAsync(repoId);
+
+                if (repo == null)
+                {
+                    _logger.LogWarning("Repository not found with Id: {RepoId}", repoId);
+                    throw new Exception("Repository not found");
+                }
+
+
+
                 await _repository.DeleteAsync(repoId);
+
+                //  CLEAR CACHE AFTER DELETE
+                await _cache.RemoveAsync($"repos_{repo.OwnerId}_1_10");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _logger.LogError(ex, "Error deketing repository Id:{RepoId}", repoId);
+                _logger.LogError(ex, "Error deleting repository Id:{RepoId}", repoId);
                 throw;
             }
         }
 
-
+        //MAIN REDIS IMPLEMENTATION
         public async Task<IEnumerable<RepositoryDto>> GetRepositories(int userId, int pageNumber, int pageSize)
         {
-            _logger.LogInformation("Fetching paginated repos for UserId: {UserId}, Page: {Page}, Size: {Size}",
-              userId, pageNumber, pageSize);
+            var cacheKey = $"repos_{userId}_{pageNumber}_{pageSize}";
+
+            _logger.LogInformation("Checking cache for key: {CacheKey}", cacheKey);
+
             try
             {
+                //  1. CHECK CACHE
+                var cachedData = await _cache.GetAsync<IEnumerable<RepositoryDto>>(cacheKey);
+
+                if (cachedData != null)
+                {
+                    _logger.LogInformation("Cache HIT for key: {CacheKey}", cacheKey);
+                    return cachedData;
+                }
+
+                _logger.LogInformation("Cache MISS for key: {CacheKey}", cacheKey);
+
+                //  FETCH FROM DB
                 var repos = await _repository.GetRepositories(userId, pageNumber, pageSize);
-                _logger.LogInformation("Fetched {Count} repos for UserId: {UserId}", repos.Count(), userId);
-                return _mapper.Map<IEnumerable<RepositoryDto>>(repos);
+
+                var mapped = _mapper.Map<IEnumerable<RepositoryDto>>(repos);
+
+                //  STORE IN CACHE
+                await _cache.SetAsync(cacheKey, mapped, TimeSpan.FromMinutes(5));
+
+                return mapped;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "Error fetching paginated repos for UserId: {UserId}", userId);
                 throw;
             }
         }
-
-
-
     }
 }

@@ -6,6 +6,7 @@ using GithubClone.Application.Repository;
 using GithubClone.Application.Services;
 using GithubClone.Infrastructure.Database;
 using GithubClone.Infrastructure.Repository;
+using GithubClone.Infrastructure.Services;
 using GithubClone.Infrastructure.SignalR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -104,6 +105,24 @@ catch (ReflectionTypeLoadException ex)
     }
     throw;
 }
+
+//Redis Caching 
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration["Redis:ConnectionString"];
+});
+
+// Register caching service
+builder.Services.AddScoped<ICachingServices, RedisCachingService>();
+
+
+
+
+
+
+
+
+
 
 
 
