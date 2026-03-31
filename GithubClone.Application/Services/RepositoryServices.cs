@@ -56,7 +56,7 @@ namespace GithubClone.Application.Services
 
                 _logger.LogInformation("Default branch 'main' created for RepoId: {RepoId}", repo.Id);
 
-                // 🔥 NEW: CLEAR CACHE AFTER CREATE
+                // Clear the caches so new repo shows in list 
                 await _cache.RemoveAsync($"repos_{userId}_1_10");
 
                 return _mapper.Map<RepositoryDto>(repo);
@@ -137,6 +137,8 @@ namespace GithubClone.Application.Services
 
                 //  CLEAR CACHE AFTER DELETE
                 await _cache.RemoveAsync($"repos_{repo.OwnerId}_1_10");
+                // repos -> we are storing repositories , ownerId and 1 -> page number , 10 -> page size 
+
             }
             catch (Exception ex)
             {
@@ -154,7 +156,7 @@ namespace GithubClone.Application.Services
 
             try
             {
-                //  1. CHECK CACHE
+                //  1. CHECK CACHE i.e CACHE HIT ;Returns directly 
                 var cachedData = await _cache.GetAsync<IEnumerable<RepositoryDto>>(cacheKey);
 
                 if (cachedData != null)
@@ -165,12 +167,15 @@ namespace GithubClone.Application.Services
 
                 _logger.LogInformation("Cache MISS for key: {CacheKey}", cacheKey);
 
-                //  FETCH FROM DB
+                //  FETCH FROM DB IF CACHE IS MISSED 
                 var repos = await _repository.GetRepositories(userId, pageNumber, pageSize);
+
+
+                // Entity -> Dto
 
                 var mapped = _mapper.Map<IEnumerable<RepositoryDto>>(repos);
 
-                //  STORE IN CACHE
+                //  STORE IN CACHE i.e Store DTO in Redis 
                 await _cache.SetAsync(cacheKey, mapped, TimeSpan.FromMinutes(5));
 
                 return mapped;
