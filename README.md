@@ -26,15 +26,29 @@ Built as a learning project to master backend  using .NET.
         Backend validates the token and marks the email as verified
         User can now log in successfully
 
-Rate Limiting
+### Rate Limiting
 
         Rate limiting is implemented to protect the API from abuse and excessive requests.
         To prevent brute-force attacks (especially on login)
 
-Real-Time Notifications with SignalR
+### Real-Time Notifications with SignalR
 
     This project uses SignalR to enable real-time communication between the server and clients. It allows the backend to instantly 
     push notifications to users without requiring them to refresh the page.
+
+
+
+### Redis Caching
+
+    This project uses Redis as a distributed caching layer to improve performance and reduce database load.
+    
+    Frequently accessed data (such as paginated repositories) is cached using a cache-aside pattern:
+    
+    On request, the application first checks Redis for cached data.
+    If found (cache hit), the data is returned immediately.
+    If not (cache miss), data is fetched from the database and stored in Redis for future requests.
+
+
      
 ###  Repository Management
     - Create, update, delete repositories
@@ -100,7 +114,10 @@ If any step fails, all changes are rolled back automaticall
     - JWT Authentication
     - Email Verification
     - AutoMapper
+    - SignalR
     - Transactions
+    - RateLimitter 
+    - Redis 
 
 ---
 
@@ -114,6 +131,7 @@ If any step fails, all changes are rolled back automaticall
     - Pagination (OFFSET-FETCH)
     - API Response Wrapper
     - Async/Await Best Practices
+    - Caching
 
 ---
 
