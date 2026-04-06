@@ -67,5 +67,14 @@ namespace GithubClone.Api.Controllers
             var feed = await _service.GetFeed(userId);
             return Ok(feed);
         }
+
+        [HttpGet("stats")]
+        public async Task<IActionResult> GetFollowStats(int userId)
+        {
+            var result = await _service.GetFollowStatsAsync(userId);
+            return Ok(result);
+        }
+
+
     }
 }

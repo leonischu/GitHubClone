@@ -16,4 +16,12 @@ namespace GithubClone.Application.DTOs
     {
         public int FollowingId { get; set; }    
     }
+
+
+    public class UserFollowStatsDto
+    {
+        public int Followers { get; set; }
+        public int Following { get; set; }
+    }
+
 }

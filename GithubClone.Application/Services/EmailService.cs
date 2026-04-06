@@ -17,15 +17,15 @@ namespace GithubClone.Application.Services
             {
                 UseDefaultCredentials = false,
                 Credentials = new NetworkCredential(
-         "addyouremailherebruhh@gmail.com",
-         "your app password"
+         "your_email_@gmail.com",
+        "Enter Your App Password"
      ),
                 EnableSsl = true
             };
 
             var mail = new MailMessage
             {
-                From = new MailAddress("addyouremailbro@gmail.com"),
+                From = new MailAddress("your_email_@gmail.com"),
                 Subject = subject,
                 Body = body,
                 IsBodyHtml = true

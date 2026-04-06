@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using GithubClone.Application.DTOs;
 using GithubClone.Application.Interfaces.Repository;
 using GithubClone.Domain.Entities;
 using GithubClone.Infrastructure.Database;
@@ -114,6 +115,20 @@ namespace GithubClone.Infrastructure.Repository
                     WHERE FollowerId = @followerId AND FollowingId = @followingId";
 
              await connection.ExecuteAsync(sql, new { followerId, followingId });
+        }
+
+        //Followers and Following Status 
+        public async Task<UserFollowStatsDto> GetUserFollowStatsAsync(int userId)
+        {
+            var query = @"SELECT (SELECT COUNT(DISTINCT FollowerId) FROM Follows WHERE FollowingId = @UserId) AS Followers, 
+                        (SELECT COUNT(DISTINCT FollowingId) FROM Follows WHERE FollowerId = @UserId) AS Following";
+            using var connection = _context.CreateConnection();
+            var result = await connection.QueryFirstOrDefaultAsync<UserFollowStatsDto>(
+                query,
+                new { UserId = userId }
+                );
+            return result ?? new UserFollowStatsDto();
+
         }
     }
 }

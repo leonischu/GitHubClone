@@ -21,7 +21,7 @@ namespace GithubClone.Api.Controllers
 
         [HttpPost("register")]
 
-        public async Task<IActionResult>Register(RegisterDto dto)
+        public async Task<IActionResult>Register([FromBody] RegisterDto dto)
         {
             var user = await _service.RegisterAsync(dto);
             return Ok(user);    
@@ -30,7 +30,7 @@ namespace GithubClone.Api.Controllers
 
         [HttpPost("login")]
 
-        public async Task<IActionResult>Login(LoginDto dto)
+        public async Task<IActionResult>Login([FromBody] LoginDto dto)
         {
             var token = await _service.LoginAsync(dto); 
             return Ok(token);

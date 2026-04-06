@@ -1,4 +1,5 @@
-﻿using GithubClone.Domain.Entities;
+﻿using GithubClone.Application.DTOs;
+using GithubClone.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,8 @@ namespace GithubClone.Application.Interfaces.Repository
         Task UnfollowUser(int followerId, int followingId);
 
         Task<IEnumerable<int>> GetFollowingIds(int userId);
+
+        Task<UserFollowStatsDto> GetUserFollowStatsAsync(int userId);
 
         Task<IEnumerable<Repositories>>GetRepositoriesByUserIds(IEnumerable<int> userIds);
     }

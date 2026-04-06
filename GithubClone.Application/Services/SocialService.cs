@@ -1,4 +1,5 @@
-﻿using GithubClone.Application.Interfaces.Repository;
+﻿using GithubClone.Application.DTOs;
+using GithubClone.Application.Interfaces.Repository;
 using GithubClone.Application.Interfaces.Services;
 using GithubClone.Domain.Entities;
 using System;
@@ -70,6 +71,10 @@ namespace GithubClone.Application.Services
             return await _repo.GetRepositoriesByUserIds(followingIds);
         }
 
-
+        public async Task<UserFollowStatsDto> GetFollowStatsAsync(int userId)
+        {
+            return await _repo.GetUserFollowStatsAsync(userId);
+     
+        }
     }
 }
