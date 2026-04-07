@@ -28,5 +28,13 @@ namespace GithubClone.Infrastructure.Repository
             return await connection.ExecuteScalarAsync<int>(query, file);
         }
 
+        public async Task<IEnumerable<FileEntity>> GetFilesByCommitIdAsync(int commitId)
+        {
+            var query = @"SELECT f.Id,f.FileName,f.Content FROM Files f 
+                        INNER JOIN RepositoryFiles rf  ON rf.FileId = f.Id  
+                        WHERE rf.CommitId = @CommitId";
+            using var connection = _context.CreateConnection();
+            return await connection.QueryAsync<FileEntity>(query, new { CommitId = commitId });
+        }
     }
 }

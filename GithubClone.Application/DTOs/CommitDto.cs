@@ -14,5 +14,6 @@ namespace GithubClone.Application.DTOs
 
         public DateTime CreatedAt { get; set; }
         public int BranchId { get; set; }
+        public List<FileDto> Files { get; set; } = new();
     }
 }

@@ -71,15 +71,29 @@ namespace GithubClone.Application.Services
         {
             var commits = await _commitRepo.GetByRepositoryIdAsync(repoId);
 
-            return _mapper.Map<IEnumerable<CommitDto>>(commits);
+            return await MapCommitsWithFilesAsync(commits); ;
         }
 
         public async Task<IEnumerable<CommitDto>> GetCommitsByBranch(int branchId)
         {
             var commits = await _commitRepo.GetByBranchIdAsync(branchId);
 
-            return _mapper.Map<IEnumerable<CommitDto>>(commits);
+            return await MapCommitsWithFilesAsync(commits); ;
         }
 
+        private async Task<IEnumerable<CommitDto>> MapCommitsWithFilesAsync(IEnumerable<Commit> commits)
+        {
+            var result = new List<CommitDto>();
+            foreach(var commit in commits)
+            {
+                var dto = _mapper.Map<CommitDto>(commit);
+                var files = await _fileRepo.GetFilesByCommitIdAsync(commit.Id);
+                Console.WriteLine($"CommitId: {commit.Id}, Files found: {files.Count()}");
+
+                dto.Files = _mapper.Map<List<FileDto>>(files);
+                result.Add(dto);
+            }
+            return result;
+        }
     }
 }

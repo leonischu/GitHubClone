@@ -10,5 +10,7 @@ namespace GithubClone.Application.Interfaces.Repository
     public interface IFileRepository
     {
         Task<int> CreateAsync(FileEntity file);
+
+        Task<IEnumerable<FileEntity>> GetFilesByCommitIdAsync(int commitId);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using GithubClone.Application.DTOs;
+using GithubClone.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,7 @@ namespace GithubClone.Application.Interfaces.Services
 
         Task<IEnumerable<CommitDto>> GetCommits(int repoId);
         Task<IEnumerable<CommitDto>> GetCommitsByBranch(int branchId);
+
+        //Task<IEnumerable<CommitDto>> MapCommitsWithFilesAsync(IEnumerable<Commit> commits);
 }
 }
