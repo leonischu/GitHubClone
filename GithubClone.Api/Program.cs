@@ -1,4 +1,5 @@
 using GithubClone.Api.Middleware;
+using GithubClone.Application.Interfaces.ML;
 using GithubClone.Application.Interfaces.Repository;
 using GithubClone.Application.Interfaces.Services;
 using GithubClone.Application.Mapping;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.ML;
 using Serilog;
 using System.Reflection;
 using System.Text;
@@ -78,7 +80,11 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
+//For ML 
+builder.Services.AddScoped<IRecommendationRepository, RecommendationRepository>();
+builder.Services.AddScoped<IRecommendationService, RecommendationService>();
 
+builder.Services.AddSingleton<MLContext>();
 //CORS
 
 builder.Services.AddCors(options =>
