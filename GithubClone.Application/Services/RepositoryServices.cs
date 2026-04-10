@@ -148,7 +148,7 @@ namespace GithubClone.Application.Services
         }
 
         //MAIN REDIS IMPLEMENTATION
-        public async Task<IEnumerable<RepositoryDto>> GetRepositories(int userId, int pageNumber, int pageSize)
+        public async Task<PagedResult<RepositoryDto>> GetRepositories(int userId, int pageNumber, int pageSize)
         {
             var cacheKey = $"repos_{userId}_{pageNumber}_{pageSize}";
 
@@ -157,7 +157,7 @@ namespace GithubClone.Application.Services
             try
             {
                 //  1. CHECK CACHE i.e CACHE HIT ;Returns directly 
-                var cachedData = await _cache.GetAsync<IEnumerable<RepositoryDto>>(cacheKey);
+                var cachedData = await _cache.GetAsync<PagedResult<RepositoryDto>>(cacheKey);
 
                 if (cachedData != null)
                 {
@@ -175,10 +175,27 @@ namespace GithubClone.Application.Services
 
                 var mapped = _mapper.Map<IEnumerable<RepositoryDto>>(repos);
 
-                //  STORE IN CACHE i.e Store DTO in Redis 
-                await _cache.SetAsync(cacheKey, mapped, TimeSpan.FromMinutes(5));
+                //total count 
+                var totalCount = await _repository.GetRepositoryCount(userId);
 
-                return mapped;
+
+                //Calculate total pages 
+                var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+                var result = new PagedResult<RepositoryDto>
+                {
+                    Data = mapped,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalPages = totalPages,
+                    TotalCount = totalCount
+                };
+
+
+                //  STORE IN CACHE i.e Store DTO in Redis 
+                await _cache.SetAsync(cacheKey, result, TimeSpan.FromMinutes(5));
+
+                return result;
             }
             catch (Exception ex)
             {

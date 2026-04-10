@@ -45,8 +45,8 @@ namespace GithubClone.Infrastructure.Services
                 LabelColumnName = nameof(RepoInteraction.Label),
 
                 //Training quality 
-                //Iterations → learning cycles
-                //Rank → complexity of mode
+                //Iterations -> learning cycles
+                //Rank -> complexity of mode
                 
                 NumberOfIterations = 50,
                 ApproximationRank = 100,

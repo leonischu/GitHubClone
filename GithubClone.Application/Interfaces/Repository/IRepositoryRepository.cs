@@ -9,7 +9,7 @@ namespace GithubClone.Application.Interfaces.Repository
 {
     public  interface IRepositoryRepository
     {
-
+        Task<int> GetRepositoryCount(int userId);
         Task<IEnumerable<Repositories>> GetRepositories(int userId, int pageNumber, int pageSize);
         Task<int> CreateAsync(Repositories repo);
 

@@ -87,5 +87,14 @@ namespace GithubClone.Infrastructure.Repository
                 pageSize
             });
         }
+
+        public async Task<int> GetRepositoryCount(int userId)
+        {
+            var sql = @"SELECT COUNT(*) FROM Repositories WHERE OwnerId = @userId";
+
+            using var connection = _context.CreateConnection();
+            return await connection.ExecuteScalarAsync<int>(sql, new { userId });
+
+        }
     }
 }
