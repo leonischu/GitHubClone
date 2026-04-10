@@ -13,6 +13,34 @@ Built as a learning project to master backend  using .NET.
     - User registration with email verification & login
     - JWT-based authentication
     - Secure password hashing
+
+### Recommendation System (ML.NET)
+
+        This project includes a basic repository recommendation system built using ML.NET Matrix Factorization.
+
+        The system currently uses user–repository star interactions to learn preferences and recommend repositories.
+
+        How it works: 
+        
+        Star data is fetched from the database.
+        User IDs and Repository IDs are encoded as categorical keys.
+        A Matrix Factorization model is trained on this interaction data.
+        The model predicts a score for each repository for a given user.
+        Top repositories with the highest scores are returned as recommendations.
+
+         Response body : 
+         {
+              "status": true,
+              "data": [
+                {
+                  "repoId": 1,
+                  "score": 1
+                }
+                }
+
+
+
+
 ### Email Verification
 
         To ensure only valid users can access the system, email verification is implemented during registration.
