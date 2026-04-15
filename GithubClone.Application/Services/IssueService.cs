@@ -33,7 +33,7 @@ namespace GithubClone.Application.Services
 
         public async Task<IEnumerable<IssueDto>> GetIssues(int repositoryId)
         {
-            var issues = await _repository.GetByRepositoryIdAsync(repositoryId);
+            var issues = await _repository.GetIssuesWithCommentsByRepoId(repositoryId);
             return _mapper.Map<IEnumerable<IssueDto>>(issues);
         }
 

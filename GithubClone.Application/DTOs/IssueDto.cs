@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GithubClone.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,7 @@ namespace GithubClone.Application.DTOs
         public string Description { get; set; }
         public string Status { get; set; }
         public DateTime CreatedAt { get; set; }
+        public List<IssueComment> Comments { get; set; } = new();
     }
 
     public class CreateIssueDto

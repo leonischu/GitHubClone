@@ -14,5 +14,7 @@ namespace GithubClone.Domain.Entities
         public string Description { get; set; }
         public string Status { get; set; } = "Open";
         public DateTime CreatedAt { get; set; }
+
+        public List<IssueComment> Comments { get; set; } = new();
     }
 }

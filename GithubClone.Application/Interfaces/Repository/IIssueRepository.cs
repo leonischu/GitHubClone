@@ -15,5 +15,6 @@ namespace GithubClone.Application.Interfaces.Repository
         Task AddCommentAsync(IssueComment comment);
         Task<IEnumerable<IssueComment>> GetCommentsByIssueIdAsync(int issueId);
         Task UpdateStatusAsync(int issueId, string status);
+        Task<IEnumerable<Issue>> GetIssuesWithCommentsByRepoId(int repositoryId);
     }
 }

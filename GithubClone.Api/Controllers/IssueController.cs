@@ -46,7 +46,7 @@ namespace GithubClone.Api.Controllers
             return Ok("Issue closed");
         }
 
-        [HttpGet("{issueId}/comments")]
+        [HttpGet("comments/{issueId}")]
         public async Task<IActionResult> GetComments(int issueId)
         {
             var comments = await _service.GetComments(issueId);

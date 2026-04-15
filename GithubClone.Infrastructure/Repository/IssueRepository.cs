@@ -67,6 +67,48 @@ namespace GithubClone.Infrastructure.Repository
             await connection.ExecuteAsync(query, new { status, issueId });
         }
 
+        public async Task<IEnumerable<Issue>> GetIssuesWithCommentsByRepoId(int repositoryId)
+        {
+            var query = @"
+                        SELECT 
+                            i.Id, i.RepositoryId, i.Title, i.Description, i.Status, i.CreatedAt,
+                            ic.Id, ic.IssueId, ic.UserId, ic.Comment, ic.CreatedAt
+                        FROM Issues i
+                        LEFT JOIN IssueComments ic ON i.Id = ic.IssueId
+                        WHERE i.RepositoryId = @repositoryId";
 
-    }
+            using var connection = _context.CreateConnection();
+
+            var issueDictionary = new Dictionary<int, Issue>();  //IssueId = Issue Object 
+
+            var result = await connection.QueryAsync<Issue, IssueComment, Issue>( // each row has issue and issue comment , combine it   QueryAsync<TFirst, TSecond, TReturn>
+                query,
+                (issue, comment) => //row 1  => issue + comment 1 , row2 = issue +  comment 2 and so on 
+                {
+                    if (!issueDictionary.TryGetValue(issue.Id, out var existingIssue))
+                    {
+
+                        //if issue dosent existm store new issue and give it empty comment list ,  if it exist skip creating new issue , use the existing one
+                        existingIssue = issue;
+                        existingIssue.Comments = new List<IssueComment>();
+                        issueDictionary.Add(existingIssue.Id, existingIssue);
+                    }
+
+                    if (comment != null)
+                    {
+
+                        //If row has a comment add it to the correct issue 
+                        existingIssue.Comments.Add(comment);
+                    }
+
+                    return existingIssue;
+                },
+                new { repositoryId },
+                splitOn: "Id"  // from this column onward it a new object (Issue Comment) 
+                               //i.e     Id | RepositoryId | Title | Id | IssueId | Comment  ? Where does issue and issue comment starts ??  
+                               // when you see second id on table , start mapping next object (issue comment)
+            );
+
+            return issueDictionary.Values;
+        }    }
 }
